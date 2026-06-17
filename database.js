@@ -209,32 +209,28 @@ function selectQuery(sql, params = []) {
   loadDatabase();
   const cleanSql = sql.toLowerCase().replace(/\s+/g, ' ').trim();
 
-  // 1. SELECT COUNT(*) as count FROM subjects
-  if (cleanSql.includes('select count(*) as count from subjects')) {
-    return [{ count: dbState.subjects.length }];
-  }
-
-  // 2. SELECT COUNT(*) as count FROM topics
-  if (cleanSql.includes('select count(*) as count from topics')) {
-    return [{ count: dbState.topics.length }];
-  }
-
-  // 3. SELECT COUNT(*) as count FROM pdfs
-  if (cleanSql.includes('select count(*) as count from pdfs')) {
-    return [{ count: dbState.pdfs.length }];
-  }
-
-  // 4. SELECT title, created_at FROM pdfs ORDER BY created_at DESC LIMIT 1
-  if (cleanSql.includes('order by created_at desc limit 1')) {
-    const list = [...dbState.pdfs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    if (list.length > 0) {
-      return [{ title: list[0].title, created_at: list[0].created_at }];
+  // 1. SELECT COUNT
+  if (cleanSql.includes('select count(*) as count from subjects') || cleanSql.includes('select count(*) as count from pdfs') || cleanSql.includes('select count(*) as count from topics')) {
+    if (cleanSql.includes('from subjects')) {
+      return [{ count: dbState.subjects.length }];
+    } else if (cleanSql.includes('from topics')) {
+      return [{ count: dbState.topics.length }];
+    } else if (cleanSql.includes('from pdfs')) {
+      return [{ count: dbState.pdfs.length }];
     }
-    return [];
   }
 
-  // 5. SELECT * FROM subjects ORDER BY name ASC
-  if (cleanSql.startsWith('select * from subjects') && !cleanSql.includes('where id =')) {
+  // 2. SELECT FROM subjects
+  if (cleanSql.includes('from subjects')) {
+    const collapsed = cleanSql.replace(/\s*=\s*/g, '=');
+    if (collapsed.includes('id=?') || collapsed.includes('s.id=?')) {
+      const id = Number(params[0]);
+      const sub = dbState.subjects.find(s => s.id === id);
+      if (!sub) return [];
+      if (cleanSql.includes('select name')) return [{ name: sub.name }];
+      return [sub];
+    }
+    
     let results = [...dbState.subjects];
     if (cleanSql.includes('where name like')) {
       const searchVal = params[0]?.replace(/%/g, '').toLowerCase() || '';
@@ -244,39 +240,8 @@ function selectQuery(sql, params = []) {
     return results;
   }
 
-  // 6. SELECT * FROM subjects WHERE id = ? / SELECT name FROM subjects WHERE id = ?
-  if (cleanSql.includes('select * from subjects where id =') || cleanSql.includes('select name from subjects where id =')) {
-    const id = Number(params[0]);
-    const sub = dbState.subjects.find(s => s.id === id);
-    if (!sub) return [];
-    if (cleanSql.includes('select name from')) {
-      return [{ name: sub.name }];
-    }
-    return [sub];
-  }
-
-  // 7. SELECT t.*, s.name as subject_name FROM topics t JOIN subjects s ON t.subject_id = s.id WHERE t.id = ?
-  if (cleanSql.includes('select t.*, s.name as subject_name from topics t join subjects s') && cleanSql.includes('t.id =')) {
-    const id = Number(params[0]);
-    const topic = dbState.topics.find(t => t.id === id);
-    if (!topic) return [];
-    const sub = dbState.subjects.find(s => s.id === topic.subject_id);
-    return [{
-      ...topic,
-      subject_name: sub ? sub.name : 'Unknown'
-    }];
-  }
-
-  // 8. SELECT name FROM topics WHERE id = ?
-  if (cleanSql.includes('select name from topics where id =')) {
-    const id = Number(params[0]);
-    const topic = dbState.topics.find(t => t.id === id);
-    if (!topic) return [];
-    return [{ name: topic.name }];
-  }
-
-  // 9. SELECT t.*, s.name as subject_name FROM topics t JOIN subjects s ON t.subject_id = s.id
-  if (cleanSql.includes('select t.*, s.name as subject_name from topics t join subjects s')) {
+  // 3. SELECT FROM topics
+  if (cleanSql.includes('from topics')) {
     let results = dbState.topics.map(t => {
       const sub = dbState.subjects.find(s => s.id === t.subject_id);
       return {
@@ -285,13 +250,26 @@ function selectQuery(sql, params = []) {
       };
     });
 
+    const collapsed = cleanSql.replace(/\s*=\s*/g, '=');
+
+    if (collapsed.includes('where t.id=?') || collapsed.includes('where id=?') || collapsed.includes('t.id=?')) {
+      // If it is a check for specific topic id
+      if (!collapsed.includes('subject_id=?')) {
+        const id = Number(params[0]);
+        const topic = results.find(t => t.id === id);
+        if (!topic) return [];
+        if (cleanSql.includes('select name')) return [{ name: topic.name }];
+        return [topic];
+      }
+    }
+
     let paramIndex = 0;
-    if (cleanSql.includes('where t.subject_id =') || cleanSql.includes('and t.subject_id =')) {
+    if (collapsed.includes('subject_id=?') || collapsed.includes('t.subject_id=?')) {
       const subIdValue = Number(params[paramIndex++]);
       results = results.filter(t => t.subject_id === subIdValue);
     }
 
-    if (cleanSql.includes('t.name like')) {
+    if (cleanSql.includes('name like')) {
       const searchVal = params[paramIndex]?.replace(/%/g, '').toLowerCase() || '';
       results = results.filter(t => t.name.toLowerCase().includes(searchVal));
     }
@@ -300,8 +278,16 @@ function selectQuery(sql, params = []) {
     return results;
   }
 
-  // 10. SELECT p.id, p.subject_id, p.topic_id, p.title ... FROM pdfs p
-  if (cleanSql.includes('select p.id, p.subject_id, p.topic_id, p.title, p.type, p.created_at') || cleanSql.includes('select p.id, p.subject_id, p.topic_id')) {
+  // 4. SELECT FROM pdfs
+  if (cleanSql.includes('from pdfs')) {
+    if (cleanSql.includes('order by created_at desc limit 1')) {
+      const list = [...dbState.pdfs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      if (list.length > 0) {
+        return [{ title: list[0].title, created_at: list[0].created_at }];
+      }
+      return [];
+    }
+
     let results = dbState.pdfs.map(p => {
       const sub = dbState.subjects.find(s => s.id === p.subject_id);
       const top = dbState.topics.find(t => t.id === p.topic_id);
@@ -312,18 +298,37 @@ function selectQuery(sql, params = []) {
       };
     });
 
-    let paramIndex = 0;
-    if (cleanSql.includes('where p.topic_id =') || cleanSql.includes('and p.topic_id =')) {
-      const topicIdVal = Number(params[paramIndex++]);
-      results = results.filter(p => p.topic_id === topicIdVal);
+    const collapsed = cleanSql.replace(/\s*=\s*/g, '=');
+
+    if (collapsed.includes('where p.id=?') || collapsed.includes('where id=?') || collapsed.includes('p.id=?')) {
+      if (!collapsed.includes('subject_id=?') && !collapsed.includes('topic_id=?')) {
+        const id = Number(params[0]);
+        const pdf = results.find(p => p.id === id);
+        if (!pdf) return [];
+        if (cleanSql.includes('select file_path')) {
+          return [{ file_path: pdf.file_path, title: pdf.title }];
+        }
+        return [pdf];
+      }
     }
 
-    if (cleanSql.includes('where p.type =') || cleanSql.includes('and p.type =')) {
+    let paramIndex = 0;
+    if (collapsed.includes('subject_id=?') || collapsed.includes('p.subject_id=?')) {
+      const subIdValue = Number(params[paramIndex++]);
+      results = results.filter(p => p.subject_id === subIdValue);
+    }
+
+    if (collapsed.includes('topic_id=?') || collapsed.includes('p.topic_id=?')) {
+      const topicIdValue = Number(params[paramIndex++]);
+      results = results.filter(p => p.topic_id === topicIdValue);
+    }
+
+    if (collapsed.includes('type=?') || collapsed.includes('p.type=?')) {
       const typeVal = params[paramIndex++];
       results = results.filter(p => p.type === typeVal);
     }
 
-    if (cleanSql.includes('p.title like') || cleanSql.includes('t.name like') || cleanSql.includes('s.name like')) {
+    if (cleanSql.includes('title like') || cleanSql.includes('name like')) {
       const searchVal = params[paramIndex]?.replace(/%/g, '').toLowerCase() || '';
       results = results.filter(p => 
         p.title.toLowerCase().includes(searchVal) ||
@@ -334,33 +339,6 @@ function selectQuery(sql, params = []) {
 
     results.sort((a, b) => b.id - a.id);
     return results;
-  }
-
-  // 11. SELECT p.id, p.title, p.type, s.name as subject_name, t.name as topic_name FROM pdfs p JOIN subjects s ON p.subject_id = s.id JOIN topics t ON p.topic_id = t.id WHERE p.id = ?
-  if (cleanSql.includes('select p.id, p.title, p.type, s.name as subject_name, t.name as topic_name') && cleanSql.includes('p.id =')) {
-    const id = Number(params[0]);
-    const pdf = dbState.pdfs.find(p => p.id === id);
-    if (!pdf) return [];
-    const sub = dbState.subjects.find(s => s.id === pdf.subject_id);
-    const top = dbState.topics.find(t => t.id === pdf.topic_id);
-    return [{
-      id: pdf.id,
-      title: pdf.title,
-      type: pdf.type,
-      subject_name: sub ? sub.name : 'Unknown',
-      topic_name: top ? top.name : 'Unknown'
-    }];
-  }
-
-  // 12. SELECT file_path, title FROM pdfs WHERE id = ? / SELECT * FROM pdfs WHERE id = ?
-  if (cleanSql.includes('select file_path, title from pdfs where id =') || cleanSql.includes('select * from pdfs where id =')) {
-    const id = Number(params[0]);
-    const pdf = dbState.pdfs.find(p => p.id === id);
-    if (!pdf) return [];
-    if (cleanSql.includes('select file_path')) {
-      return [{ file_path: pdf.file_path, title: pdf.title }];
-    }
-    return [pdf];
   }
 
   console.log('Unparsed select fallback for:', sql);
