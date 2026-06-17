@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionToVictory | Secure Admin Gateway</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F59E0B'><circle cx='12' cy='12' r='10' fill='none' stroke='%23F59E0B' stroke-width='2'/><polygon points='10 8 16 12 10 16 10 8'/></svg>">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px;">
+
+  <div class="glass-card admin-login-wrapper" style="width: 100%; max-width: 440px;">
+    
+    <!-- Logo Indicator -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <div style="width: 54px; height: 54px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--color-gold); margin: 0 auto 16px auto;">
+        <i data-lucide="shield-alert" style="color: #FBBF24; width: 28px; height: 28px;"></i>
+      </div>
+      <h1 class="gold-gradient-text" style="font-size: 2rem; margin-bottom: 8px;">Admin Gateway</h1>
+      <p style="color: #94A3B8; font-size: 0.9rem;">VisionToVictory Coaching Board Credentials</p>
+    </div>
+
+    <!-- Login credentials form -->
+    <form id="admin-login-form">
+      <div style="margin-bottom: 24px; position: relative;">
+        <label for="password" style="display: block; color: #FBBF24; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Authorized Key Password</label>
+        <div style="position: relative;">
+          <input type="password" id="password" name="password" required class="premium-input" placeholder="••••••••••••••••" style="padding-left: 45px; padding-right: 45px;">
+          <i data-lucide="lock" style="position: absolute; left: 16px; top: 13px; color: #F59E0B; width: 18px; height: 18px;"></i>
+          <button type="button" id="toggle-pwd" style="background: transparent; border: none; position: absolute; right: 16px; top: 12px; cursor: pointer; color: #64748B;">
+            <i data-lucide="eye" style="width: 18px; height: 18px;" id="toggle-pwd-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="gold-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px;">
+        <i data-lucide="key-round" style="width: 18px; height: 18px;"></i>
+        <span>Unlock Board Dashboard</span>
+      </button>
+    </form>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <a href="/" style="color: #94A3B8; text-decoration: none; font-size: 0.9rem; transition: color 0.2s ease;" class="hover:text-amber-400">
+        <i data-lucide="arrow-left" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
+        <span>Return to Student Portal</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Toast system for login errors -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // Lucide initialization
+    lucide.createIcons();
+
+    // Toggle Password visibility
+    const pwdInput = document.getElementById('password');
+    const togglePwdBtn = document.getElementById('toggle-pwd');
+    const toggleIcon = document.getElementById('toggle-pwd-icon');
+
+    togglePwdBtn.addEventListener('click', () => {
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        toggleIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        pwdInput.type = 'password';
+        toggleIcon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    });
+
+    // Toast show helper function
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const iconName = type === 'success' ? 'check-circle' : 'alert-triangle';
+      toast.innerHTML = `
+        <i data-lucide="${iconName}"></i>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      // Trigger automatic removal
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s forwards reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Auto-login pre-verification using stored local token to work around sandbox iframe limitations
+    async function checkAutoLogin() {
+      const storedToken = localStorage.getItem('vision_admin_token');
+      if (storedToken) {
+        try {
+          const response = await fetch('/api/admin/session', {
+            headers: { 'Authorization': `Bearer ${storedToken}` }
+          });
+          const status = await response.json();
+          if (status.authenticated) {
+            window.location.href = `/admin-dashboard?token=${storedToken}`;
+          }
+        } catch (e) {
+          console.error('Auto login check error:', e);
+        }
+      }
+    }
+    checkAutoLogin();
+
+    // Submit handler
+    const form = document.getElementById('admin-login-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = pwdInput.value;
+
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.token) {
+            localStorage.setItem('vision_admin_token', data.token);
+          }
+          showToast('Board verified successfully! Redirecting...');
+          setTimeout(() => {
+            const dest = data.token ? `/admin-dashboard?token=${data.token}` : '/admin-dashboard';
+            window.location.href = dest;
+          }, 1000);
+        } else {
+          showToast(data.error || 'Authentication failed. Incorrect password.', 'error');
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        showToast('System gateway error. Connect is down.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "VisionToVictory",
+  "description": "A premium coaching-style PDF learning platform where students can browse subjects, topics, and read PDFs online in a highly secure viewer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionToVictory | Admin Space Control Board</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F59E0B'><circle cx='12' cy='12' r='10' fill='none' stroke='%23F59E0B' stroke-width='2'/><polygon points='10 8 16 12 10 16 10 8'/></svg>">
+</head>
+<body>
+
+  <!-- Sticky Luxury Nav -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="logo-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+        <span class="gold-gradient-text" style="font-weight: 700;">VisionToVictory</span>
+        <span style="font-size: 13px; font-weight: 500; font-family: var(--font-sans); background: rgba(245,158,11,0.15); border: 1px solid var(--color-gold-border); padding: 3px 10px; border-radius: 99px; text-transform: uppercase;">ADMIN</span>
+      </a>
+      <div style="display: flex; gap: 16px;">
+        <a href="/" class="gold-outline-btn" style="text-decoration: none;">
+          <i data-lucide="eye"></i>
+          <span>View Student Site</span>
+        </a>
+        <button id="logout-btn" class="danger-btn" style="display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    
+    <!-- Hero / Intro & Realtime Statistics -->
+    <header style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <h1 class="gold-gradient-text" style="font-size: 2.2rem; margin-bottom: 6px;">Control Board Dashboard</h1>
+        <p style="color: #94A3B8; font-size: 0.95rem;">Add curriculum subjects, modular topics, and upload lecture syllabus securely.</p>
+      </div>
+    </header>
+
+    <!-- Admin Panel Statistics Counters -->
+    <section class="dashboard-summary-cards">
+      <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+        <div style="background: rgba(245,158,11,0.15); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-gold);">
+          <i data-lucide="book-open" style="color: #F59E0B; width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <div style="font-size: 1.8rem; font-weight: 700;" id="stats-subjects">0</div>
+          <p style="color: #94A3B8; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Subjects</p>
+        </div>
+      </div>
+      <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+        <div style="background: rgba(245,158,11,0.15); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-gold);">
+          <i data-lucide="git-pull-request" style="color: #F59E0B; width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <div style="font-size: 1.8rem; font-weight: 700;" id="stats-topics">0</div>
+          <p style="color: #94A3B8; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Learning Topics</p>
+        </div>
+      </div>
+      <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+        <div style="background: rgba(245,158,11,0.15); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-gold);">
+          <i data-lucide="file-text" style="color: #F59E0B; width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <div style="font-size: 1.8rem; font-weight: 700;" id="stats-pdfs">0</div>
+          <p style="color: #94A3B8; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Secure PDFs</p>
+        </div>
+      </div>
+      <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+        <div style="background: rgba(245,158,11,0.15); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-gold);">
+          <i data-lucide="history" style="color: #F59E0B; width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <div style="font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" id="stats-last">-</div>
+          <p style="color: #94A3B8; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Last PDF Upload</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unified Master layout forms & management -->
+    <div class="mgmt-sections">
+      
+      <!-- LEFT MODULE: Subjects & Topics Manager -->
+      <div style="display: flex; flex-direction: column; gap: 40px;">
+        
+        <!-- Subject Controller -->
+        <section class="glass-card mgmt-card">
+          <div class="section-header" style="margin-bottom: 20px;">
+            <h2 class="gold-gradient-text" style="font-size: 1.4rem; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="book-open" style="width: 20px; height: 20px; color: #F59E0B;"></i>
+              <span>Subject Curriculum Manager</span>
+            </h2>
+          </div>
+
+          <!-- Add Subject Form -->
+          <form id="add-subject-form" style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <input type="text" id="subject-name-input" placeholder="Enter Subject Name (e.g. Mathematics)" required class="premium-input">
+            <button type="submit" class="gold-btn">
+              <i data-lucide="plus"></i>
+              <span>Add</span>
+            </button>
+          </form>
+
+          <!-- Edit Subject Modal / Inline Edit Controller Info -->
+          <div id="subject-inline-editor" style="display: none; background: rgba(245,158,11,0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--color-gold-border); margin-bottom: 20px;">
+            <p style="color: #FBBF24; font-size: 0.85rem; margin-bottom: 8px; font-weight: 600;">Editing selected Subject:</p>
+            <div style="display: flex; gap: 10px;">
+              <input type="hidden" id="edit-sub-id">
+              <input type="text" id="edit-sub-name" class="premium-input" style="padding: 6px 12px;">
+              <button id="save-sub-edit-btn" class="gold-btn" style="padding: 6px 12px; font-size: 13px;">Save</button>
+              <button id="cancel-sub-edit-btn" class="gold-outline-btn" style="padding: 6px 12px; font-size: 13px;">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Subjects List with actions -->
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 70%;">Subject Title</th>
+                  <th style="width: 30%; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subjects-table-body">
+                <!-- Dynamic subject rows go here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Topic Controller -->
+        <section class="glass-card mgmt-card">
+          <div class="section-header" style="margin-bottom: 20px;">
+            <h2 class="gold-gradient-text" style="font-size: 1.4rem; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="git-pull-request" style="width: 20px; height: 20px; color: #F59E0B;"></i>
+              <span>Modular Topic Manager</span>
+            </h2>
+          </div>
+
+          <!-- Add Topic Form -->
+          <form id="add-topic-form" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+            <div>
+              <label for="topic-subject-select" style="display: block; font-size: 0.8rem; color: #FBBF24; margin-bottom: 4px;">Link containing Curriculum Subject</label>
+              <select id="topic-subject-select" class="premium-select" required>
+                <option value="">-- Choose Subject --</option>
+                <!-- Dynamically populated options -->
+              </select>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <input type="text" id="topic-name-input" placeholder="Topic Name (e.g. Ratio & Proportion)" required class="premium-input">
+              <button type="submit" class="gold-btn">
+                <i data-lucide="plus"></i>
+                <span>Add</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Edit Topic Modal / Inline editor -->
+          <div id="topic-inline-editor" style="display: none; background: rgba(245,158,11,0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--color-gold-border); margin-bottom: 20px;">
+            <p style="color: #FBBF24; font-size: 0.85rem; margin-bottom: 8px; font-weight: 600;">Editing selected Topic:</p>
+            <div style="display: flex; gap: 10px;">
+              <input type="hidden" id="edit-topic-id">
+              <input type="text" id="edit-topic-name" class="premium-input" style="padding: 6px 12px;">
+              <button id="save-topic-edit-btn" class="gold-btn" style="padding: 6px 12px; font-size: 13px;">Save</button>
+              <button id="cancel-topic-edit-btn" class="gold-outline-btn" style="padding: 6px 12px; font-size: 13px;">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Topics table -->
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 45%;">Topic Modular Title</th>
+                  <th style="width: 35%;">Linked Subject</th>
+                  <th style="width: 20%; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="topics-table-body">
+                <!-- Dynamic topic rows go here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Secure PDF Uploader & Listing Search board -->
+      <div style="display: flex; flex-direction: column; gap: 40px;">
+        
+        <!-- Secure Upload PDF Widget -->
+        <section class="glass-card mgmt-card">
+          <div class="section-header" style="margin-bottom: 20px;">
+            <h2 class="gold-gradient-text" style="font-size: 1.4rem; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="upload-cloud" style="width: 24px; height: 24px; color: #F59E0B;"></i>
+              <span>Secure PDF Uploader Gateway</span>
+            </h2>
+          </div>
+
+          <!-- Upload Form specifications -->
+          <form id="upload-pdf-form" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <!-- Dynamic dropdown dependencies: Subject dropdown -->
+            <div class="form-responsive-row">
+              <div>
+                <label for="pdf-subject-select" style="display: block; font-size: 0.8rem; color: #FBBF24; margin-bottom: 4px;">Subject</label>
+                <select id="pdf-subject-select" name="subject_id" class="premium-select" required>
+                  <option value="">-- Choose Subject --</option>
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+              <div>
+                <label for="pdf-topic-select" style="display: block; font-size: 0.8rem; color: #FBBF24; margin-bottom: 4px;">Learning Topic</label>
+                <select id="pdf-topic-select" name="topic_id" class="premium-select" required disabled>
+                  <option value="">-- Select Subject first --</option>
+                  <!-- Dynamically populated relative to selected subject -->
+                </select>
+              </div>
+            </div>
+
+            <!-- PDF Type selector: Class vs Practice -->
+            <div>
+              <label style="display: block; font-size: 0.8rem; color: #FBBF24; margin-bottom: 6px;">Secure PDF Classification Type</label>
+              <div class="flex-responsive-row">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #FFFFFF;" class="font-sans">
+                  <input type="radio" name="type" value="class" checked style="accent-color: #FBBF24;">
+                  <span><b>Class Practice</b> (e.g., Ratio Class 1)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #FFFFFF;" class="font-sans">
+                  <input type="radio" name="type" value="practice" style="accent-color: #FBBF24;">
+                  <span><b>Home Assignment</b> (e.g., Ratio Practice 1)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- PDF Display Name separate column storage -->
+            <div>
+              <label for="pdf-title" style="display: block; font-size: 0.8rem; color: #FBBF24; margin-bottom: 4px;">PDF Document Display Title</label>
+              <input type="text" id="pdf-title" name="title" required class="premium-input" placeholder="Examples: Algebra Session 1, Chemistry Practice 3">
+            </div>
+
+            <!-- Secure File upload slot -->
+            <div style="border: 2px dashed var(--color-gold-border); border-radius: 12px; padding: 24px; text-align: center; background: rgba(0,0,0,0.4); cursor: pointer; transition: border-color 0.2s;" id="drag-drop-zone">
+              <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required style="display: none;">
+              <i data-lucide="file-text" style="width: 32px; height: 32px; color: #F59E0B; margin: 0 auto 10px auto; display: block;"></i>
+              <span id="file-zone-text" style="color: #94A3B8; font-size: 0.9rem;">Drag & drop your PDF file here, or <b>browse</b></span>
+            </div>
+
+            <button type="submit" class="gold-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px;">
+              <i data-lucide="shield-check"></i>
+              <span>Securely Upload Display File</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- Manage PDFs Catalog listing with search & actions -->
+        <section class="glass-card mgmt-card">
+          <div class="section-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="gold-gradient-text" style="font-size: 1.4rem;">PDF Catalog Gateway</h2>
+            
+            <!-- Realtime Search bar -->
+            <div style="position: relative; max-width: 240px;">
+              <input type="text" id="pdf-search-catalog" class="premium-input" placeholder="Search title..." style="padding: 6px 12px 6px 32px; font-size: 13px;">
+              <i data-lucide="search" style="position: absolute; left: 10px; top: 9px; width: 14px; height: 14px; color: #F59E0B;"></i>
+            </div>
+          </div>
+
+          <!-- Edit PDF Name (Display Title) inline modal -->
+          <div id="pdf-inline-editor" style="display: none; background: rgba(245,158,11,0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--color-gold-border); margin-bottom: 20px;">
+            <p style="color: #FBBF24; font-size: 0.85rem; margin-bottom: 8px; font-weight: 600;">Rename Selected PDF Display Title:</p>
+            <div style="display: flex; gap: 10px;">
+              <input type="hidden" id="edit-pdf-id">
+              <input type="text" id="edit-pdf-title" class="premium-input" style="padding: 6px 12px;">
+              <button id="save-pdf-edit-btn" class="gold-btn" style="padding: 6px 12px; font-size: 13px;">Rename</button>
+              <button id="cancel-pdf-edit-btn" class="gold-outline-btn" style="padding: 6px 12px; font-size: 13px;">Cancel</button>
+            </div>
+          </div>
+
+          <!-- PDFs Database Display Tables (No direct internal paths shown!) -->
+          <div class="data-table-wrapper" style="max-height: 400px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 45%;">Display Title</th>
+                  <th style="width: 25%;">Subject / Topic</th>
+                  <th style="width: 15%;">Type</th>
+                  <th style="width: 15%; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="pdfs-table-body">
+                <!-- Injected via admin.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer style="text-align: center; color: #64748B; padding: 40px 24px; border-top: 1px solid rgba(245, 158, 11, 0.1); margin-top: 60px; font-size: 0.9rem;">
+    <p>&copy; 2026 VisionToVictory Admin Dashboard Panel. Session Authenticated Security.</p>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Board management controls logic script -->
+  <script src="/js/admin.js"></script>
+</body>
+</html>

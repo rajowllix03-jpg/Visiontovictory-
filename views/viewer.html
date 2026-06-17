@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionToVictory Secure Viewer</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main PDF.js CDN library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F59E0B'><circle cx='12' cy='12' r='10' fill='none' stroke='%23F59E0B' stroke-width='2'/><polygon points='10 8 16 12 10 16 10 8'/></svg>">
+  <style>
+    /* Absolute secure selection block */
+    body {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -ms-user-select: none !important;
+      -moz-user-select: none !important;
+    }
+    
+    /* Dynamic Dark Filter toggle for the PDF canvas view */
+    .dark-viewer-canvas {
+      filter: invert(0.9) hue-rotate(180deg);
+    }
+  </style>
+</head>
+<body class="viewer-wrapper">
+
+  <!-- Secure Diagonal Background Watermask Overlay -->
+  <div class="watermark-overlay" id="watermark-id-layer">
+    <div class="watermark-text watermark-1">VisionToVictory Secure Gateway</div>
+    <div class="watermark-text watermark-2" id="client-watermark-cell">Authorized Visitor</div>
+    <div class="watermark-text watermark-3">VisionToVictory DO NOT PRINT/COPY</div>
+    <div class="watermark-text watermark-4">V2V Premium Lecture Series</div>
+  </div>
+
+  <!-- Custom Golden Header Toolbar -->
+  <header class="viewer-header">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="gold-outline-btn" style="padding: 6px 12px; text-decoration: none; font-size: 13px;" id="back-portal-btn">
+        <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+        <span>Portal</span>
+      </a>
+      <h2 class="gold-gradient-text" id="pdf-header-title">Loading Secure Document...</h2>
+    </div>
+
+    <!-- Toolbar controls -->
+    <div class="viewer-controls">
+      
+      <!-- Page Navigation controls -->
+      <div style="display: flex; align-items: center; gap: 8px; border-right: 1px solid var(--color-gold-border); padding-right: 14px; margin-right: 4px;">
+        <button id="prev-page" class="gold-outline-btn" style="padding: 6px 8px;" title="Previous Page">
+          <i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i>
+        </button>
+        <span class="font-sans" style="font-size: 14px; color: #FFFFFF; font-weight: 500; min-width: 60px; text-align: center;">
+          <span id="page-num">0</span> / <span id="page-count">0</span>
+        </span>
+        <button id="next-page" class="gold-outline-btn" style="padding: 6px 8px;" title="Next Page">
+          <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+
+      <!-- Zoom and Visual Adjustment controls -->
+      <button id="zoom-out" class="gold-outline-btn" style="padding: 6px 8px;" title="Zoom Out">
+        <i data-lucide="zoom-out" style="width: 16px; height: 16px;"></i>
+      </button>
+      <span class="font-sans" style="font-size: 13px; color: #94A3B8; min-width: 44px; text-align: center;" id="zoom-percent">100%</span>
+      <button id="zoom-in" class="gold-outline-btn" style="padding: 6px 8px;" title="Zoom In">
+        <i data-lucide="zoom-in" style="width: 16px; height: 16px;"></i>
+      </button>
+
+      <!-- View Toggles: Full Screen & True Dark Mode Filter -->
+      <div style="display: flex; align-items: center; gap: 6px; border-left: 1px solid var(--color-gold-border); padding-left: 14px; margin-left: 4px;">
+        <button id="dark-mode-toggle" class="gold-outline-btn" style="padding: 6px 8px;" title="Secure Night Mode Accent">
+          <i data-lucide="moon" style="width: 16px; height: 16px; color: #F59E0B;"></i>
+        </button>
+        <button id="full-screen" class="gold-outline-btn" style="padding: 6px 8px;" title="Maximize Reader View">
+          <i data-lucide="maximize" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Viewer Canvas Screen -->
+  <main class="viewer-content-container" id="viewer-container">
+    
+    <!-- Initial Loader Overlay Spinner -->
+    <div id="viewer-loading-spinner" class="loading-backdrop">
+      <div style="text-align: center;">
+        <div class="golden-spinner" style="margin: 0 auto 20px auto;"></div>
+        <p class="gold-gradient-text" style="font-size: 1.1rem; font-weight: 500;">Securing Virtual Connection Key...</p>
+        <p style="color: #64748B; font-size: 0.85rem; margin-top: 6px;">Injecting streaming stream payload block</p>
+      </div>
+    </div>
+
+    <!-- Primary Canvas Wrapper layout -->
+    <div class="canvas-container" id="canvas-frame">
+      <canvas id="pdf-render-canvas"></canvas>
+    </div>
+
+  </main>
+
+  <!-- Script handler for custom PDFJS security toolbar actions -->
+  <script src="/js/viewer.js"></script>
+</body>
+</html>
