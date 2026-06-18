@@ -323,10 +323,10 @@ function setupPageScrollTracking() {
 function showErrorAndRedirect(message) {
   spinner.innerHTML = `
     <div style="text-align: center;">
-      <i data-lucide="shield-alert" style="width: 48px; height: 48px; color: #EF4444; margin: 0 auto 16px auto; display: block;"></i>
-      <h3 style="color:#FFFFFF; font-size: 1.3rem; margin-bottom: 8px;">Document Access Prevented</h3>
+      <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: #EF4444; margin: 0 auto 16px auto; display: block;"></i>
+      <h3 style="color:#FFFFFF; font-size: 1.3rem; margin-bottom: 8px;">Unable to Load Document</h3>
       <p style="color: #64748B; font-size: 0.9rem; max-width: 320px; margin: 0 auto 20px auto;">${message}</p>
-      <button class="gold-btn" onclick="window.location.href='/'">Return to Scholastic Portal</button>
+      <button class="gold-btn" onclick="window.location.href='/'">Return to Dashboard</button>
     </div>
   `;
   lucide.createIcons();
